@@ -122,9 +122,7 @@ pub trait IntoMap {
     fn into_btreemap(self) -> BTreeMap<TrailerKey, TrailerValue>;
 }
 
-
-impl<I: Iterator<Item = Trailer>> IntoMap for I
-{
+impl<I: Iterator<Item = Trailer>> IntoMap for I {
 
     fn into_hashmap(mut self) -> HashMap<TrailerKey, TrailerValue> {
         let mut hm = HashMap::new();
@@ -147,5 +145,4 @@ impl<I: Iterator<Item = Trailer>> IntoMap for I
     }
 
 }
-
 
