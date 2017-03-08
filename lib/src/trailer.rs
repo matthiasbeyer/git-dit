@@ -114,3 +114,38 @@ impl<'a> Iterator for DitTrailers<'a> {
 
 }
 
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+
+pub trait IntoMap {
+    fn into_hashmap(self) -> HashMap<TrailerKey, TrailerValue>;
+    fn into_btreemap(self) -> BTreeMap<TrailerKey, TrailerValue>;
+}
+
+
+impl<I: Iterator<Item = Trailer>> IntoMap for I
+{
+
+    fn into_hashmap(mut self) -> HashMap<TrailerKey, TrailerValue> {
+        let mut hm = HashMap::new();
+
+        while let Some(trailer) = self.next() {
+            hm.insert(trailer.key, trailer.value);
+        }
+
+        hm
+    }
+
+    fn into_btreemap(mut self) -> BTreeMap<TrailerKey, TrailerValue> {
+        let mut btm = BTreeMap::new();
+
+        while let Some(trailer) = self.next() {
+            btm.insert(trailer.key, trailer.value);
+        }
+
+        btm
+    }
+
+}
+
+
