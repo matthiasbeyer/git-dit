@@ -9,6 +9,8 @@
 
 use message::trailer::{Trailer, TrailerKey, TrailerValue};
 use regex::Regex;
+use std::iter::Peekable;
+use std::str;
 
 
 /// A line of an issue message
@@ -43,3 +45,35 @@ impl<'a> From<&'a str> for Line {
         }
     }
 }
+
+
+#[derive(Debug)]
+pub struct Lines<'a>(Peekable<str::Lines<'a>>);
+
+impl<'a> Lines<'a> {
+    pub fn new(text: &'a str) -> Lines<'a> {
+        Lines(text.lines().peekable())
+    }
+}
+
+impl<'a> Iterator for Lines<'a> {
+    type Item = Line;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.0.next().map(|line| Line::from(line)) {
+            Some(Line::Trailer(mut trailer)) => {
+                // accumulate potential multiline trailer
+                // TODO: also respect other whitespace
+                while self.0.peek().map_or(false, |l| l.starts_with(" ")) {
+                    // we have to consume the line we peeked at
+                    trailer.value = trailer.value.append(self.0.next().unwrap());
+                }
+
+                Some(Line::Trailer(trailer))
+            },
+            next => next,
+        }
+    }
+}
+
+
