@@ -30,7 +30,7 @@ pub enum TrailerValue {
 
 impl TrailerValue {
 
-    fn from_slice(slice: &str) -> TrailerValue {
+    pub fn from_slice(slice: &str) -> TrailerValue {
         use std::str::FromStr;
 
         match i64::from_str(slice) {
