@@ -56,6 +56,12 @@ impl<'a> Lines<'a> {
     }
 }
 
+impl<'a> From<str::Lines<'a>> for Lines<'a> {
+    fn from(lines: str::Lines<'a>) -> Self {
+        Lines(lines.peekable())
+    }
+}
+
 impl<'a> Iterator for Lines<'a> {
     type Item = Line;
 
