@@ -52,7 +52,7 @@ pub struct Lines<'a>(Peekable<str::Lines<'a>>);
 
 impl<'a> Lines<'a> {
     pub fn new(text: &'a str) -> Lines<'a> {
-        Lines(text.lines().peekable())
+        Lines::from(text.lines())
     }
 }
 
