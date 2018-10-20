@@ -564,6 +564,17 @@ subcommands:
                 long: date
                 takes_value: true
                 multiple: false
+    - import:
+        about: Import messages from a Maildir
+        version: 0.4.0
+        authors:
+            - Matthias Beyer <mail@beyermatthias.de>
+        args:
+            - maildirpath:
+                help: Path to the Maildir directory
+                index: 1
+                required: true
+                multiple: false
 settings:
     AllowExternalSubcommands
 

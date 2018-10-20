@@ -17,6 +17,8 @@ extern crate chrono;
 extern crate git2;
 extern crate libgitdit;
 extern crate regex;
+extern crate maildir;
+extern crate mailparse;
 
 #[macro_use] mod display;
 
@@ -746,6 +748,54 @@ fn tag_impl(matches: &clap::ArgMatches) {
     issue.update_head(new, true).unwrap_or_abort();
 }
 
+/// tag subcommand implementation
+///
+fn import_impl(matches: &clap::ArgMatches) {
+    use std::str::FromStr;
+    use gitext::ReferrencesExt;
+
+    let repo = util::open_dit_repo();
+
+    let pathes = matches
+        .expect("BUG") // clap safes us here
+        .values_of("maildirpath")
+        .map(String::from)
+        .map(PathBuf::from)
+        .map(Maildir::from)
+        .for_each(|maildir| {
+            debug!("Processing maildir: new: {new}, cur: {cur}",
+                   new = maildir.count_new(),
+                   cur = maildir.count_cur());
+
+            for element in maildir.list_new() {
+                match element {
+                    Ok(mailentry) => {
+                        if is_reply_to(&mailentry) {
+                            let parent  = get_parent_of_mailentry(&mailentry);
+                            let subject = get_subject_of_mailentry(&mailentry);
+                            let message = get_body_of_mailentry(&mailentry);
+
+                            // same as reply_impl()
+                            unimplemented!()
+                        } else {
+                            let subject = get_subject_of_mailentry(&mailentry);
+                            let message = get_body_of_mailentry(&mailentry);
+
+                            // same as new_impl()
+                            unimplemented!()
+                        }
+                    },
+
+                    Err(error) => {
+                        // handle
+                        unimplemented!()
+                    }
+                }
+            }
+        });
+
+}
+
 
 // Unknown subcommand handler
 
@@ -799,6 +849,7 @@ fn main() {
         ("reply",   Some(sub_matches)) => reply_impl(sub_matches),
         ("show",    Some(sub_matches)) => show_impl(sub_matches),
         ("tag",     Some(sub_matches)) => tag_impl(sub_matches),
+        ("import",  Some(sub_matches)) => import_impl(sub_matches),
         // Unknown subcommands
         ("", _) => {
             writeln!(io::stderr(), "{}", matches.usage()).ok();
